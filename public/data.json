@@ -1,0 +1,98 @@
+{
+  "clients": [
+    {
+      "id": "pinkcats",
+      "nome": "Pink Cats",
+      "logo": "/clientes/pinkcats.png"
+    },
+    {
+      "id": "sinaprors",
+      "nome": "Sinapro-RS",
+      "logo": "/clientes/sinapro.png"
+    },
+    {
+      "id": "savar",
+      "nome": "Savar",
+      "logo": "/clientes/savar.png"
+    },
+    {
+      "id": "cmpc",
+      "nome": "CMPC",
+      "logo": "/clientes/cmpc.png"
+    }
+  ],
+  "posts": [
+    {
+      "id": "post-1",
+      "cliente_id": "pinkcats",
+      "campanha_id": "q1-maio",
+      "data_publicacao": "2026-05-18",
+      "dia_semana": "Segunda-feira",
+      "formato": "Instagram Feed",
+      "horario_agendamento": "12:00",
+      "orientacoes_briefing": "Divulgar a nova sandália dourada. Foco no brilho e conforto para festas de fim de semana.",
+      "referencia_produto": "Ref: PC-9876",
+      "status_interno": "Em Criação",
+      "status_cliente": "Pendente",
+      "foto_produto_crua": "",
+      "texto_instagram": "",
+      "acessibilidade_para_todos_verem": "",
+      "direcionamento_designer": "",
+      "arte_final": ""
+    },
+    {
+      "id": "post-2",
+      "cliente_id": "sinaprors",
+      "campanha_id": "q1-maio",
+      "data_publicacao": "2026-05-20",
+      "dia_semana": "Quarta-feira",
+      "formato": "Instagram Stories",
+      "horario_agendamento": "10:00",
+      "orientacoes_briefing": "Falar sobre o novo evento do mercado publicitário gaúcho.",
+      "referencia_produto": "",
+      "status_interno": "Em Criação",
+      "status_cliente": "Pendente",
+      "foto_produto_crua": "",
+      "texto_instagram": "",
+      "acessibilidade_para_todos_verem": "",
+      "direcionamento_designer": "",
+      "arte_final": ""
+    },
+    {
+      "id": "post-3",
+      "cliente_id": "savar",
+      "campanha_id": "q1-maio",
+      "data_publicacao": "2026-05-22",
+      "dia_semana": "Sexta-feira",
+      "formato": "Instagram Feed",
+      "horario_agendamento": "18:00",
+      "orientacoes_briefing": "Oferta especial de revisão para a linha SUV.",
+      "referencia_produto": "Revisão SUV",
+      "status_interno": "Em Criação",
+      "status_cliente": "Pendente",
+      "foto_produto_crua": "",
+      "texto_instagram": "",
+      "acessibilidade_para_todos_verem": "",
+      "direcionamento_designer": "",
+      "arte_final": ""
+    },
+    {
+      "id": "post-4",
+      "cliente_id": "cmpc",
+      "campanha_id": "q1-maio",
+      "data_publicacao": "2026-05-25",
+      "dia_semana": "Segunda-feira",
+      "formato": "Instagram Feed",
+      "horario_agendamento": "09:00",
+      "orientacoes_briefing": "Destaque para as iniciativas de sustentabilidade da empresa e reflorestamento.",
+      "referencia_produto": "",
+      "status_interno": "Em Criação",
+      "status_cliente": "Pendente",
+      "foto_produto_crua": "",
+      "texto_instagram": "",
+      "acessibilidade_para_todos_verem": "",
+      "direcionamento_designer": "",
+      "arte_final": ""
+    }
+  ]
+}

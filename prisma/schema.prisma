@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id        String     @id @default(uuid())
+  nome      String
+  persona   String?
+  logo      String?
+  campaigns Campaign[]
+}
+
+model Campaign {
+  id        String   @id @default(uuid())
+  client_id String
+  periodo   String
+  client    Client   @relation(fields: [client_id], references: [id])
+  posts     Post[]
+}
+
+model Post {
+  id                              String   @id @default(uuid())
+  campanha_id                     String
+  data_publicacao                 String
+  dia_semana                      String
+  formato                         String
+  horario_agendamento             String
+  foto_produto_crua               String?
+  orientacoes_briefing            String?
+  referencia_produto              String?
+  texto_instagram                 String?
+  texto_facebook                  String?
+  acessibilidade_para_todos_verem String?
+  direcionamento_designer         String?
+  arte_final                      String?
+  status_interno                  String   @default("Em Criação")
+  obs_revisao_interna             String?
+  status_cliente                  String   @default("Pendente")
+  obs_cliente                     String?
+  campaign                        Campaign @relation(fields: [campanha_id], references: [id])
+}
