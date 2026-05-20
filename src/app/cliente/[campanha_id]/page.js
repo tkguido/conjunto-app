@@ -18,7 +18,7 @@ export default function ClientView() {
   }, [params.campanha_id]);
 
   const fetchPosts = async () => {
-    const res = await fetch('/api/data');
+    const res = await fetch('/api/data', { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       

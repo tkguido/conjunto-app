@@ -12,7 +12,7 @@ export default function ClientsView() {
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchClients = () => {
-    fetch('/api/data')
+    fetch('/api/data', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => setClients(data.clients));
   };

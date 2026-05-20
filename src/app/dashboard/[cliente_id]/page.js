@@ -17,7 +17,7 @@ export default function ClientCampaignsView() {
   const [isSavingPersona, setIsSavingPersona] = useState(false);
 
   const fetchCampaigns = () => {
-    fetch('/api/data')
+    fetch('/api/data', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         const foundClient = data.clients.find(c => c.id === params.cliente_id);

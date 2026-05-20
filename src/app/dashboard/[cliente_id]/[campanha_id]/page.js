@@ -30,7 +30,7 @@ export default function AgencyView() {
   }, [params.campanha_id, params.cliente_id]);
 
   const fetchPosts = () => {
-    fetch('/api/data')
+    fetch('/api/data', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         const foundCampaign = data.campaigns.find(c => c.id === params.campanha_id);
