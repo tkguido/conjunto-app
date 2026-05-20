@@ -4,11 +4,12 @@ import { NextResponse } from 'next/server';
 export async function PATCH(request, { params }) {
   try {
     const data = await request.json();
+    const resolvedParams = await params;
     
     // Na lib/db não temos um método "updateClient" genérico ainda, mas o Prisma tem!
     // Podemos acessar o prisma direto se db.js exportar algo ou adicionar updateClient lá.
     // Vamos adicionar um método updateClient em lib/db.js primeiro.
-    const updated = await db.updateClient(params.id, data);
+    const updated = await db.updateClient(resolvedParams.id, data);
     
     if (!updated) {
        return NextResponse.json({ error: 'Cliente não encontrado' }, { status: 404 });
