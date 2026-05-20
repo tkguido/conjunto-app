@@ -551,41 +551,73 @@ export default function AgencyView() {
                       <p className="text-xs text-muted mb-4">{post.acessibilidade_para_todos_verem}</p>
                     )}
 
-                    {post.arte_final && (
-                      <div className="mt-4 pt-4 border-t border-slate-200">
-                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <div className="flex items-center justify-between gap-2 mb-4">
+                        <h4 className="font-bold text-sm flex items-center gap-2 m-0">
                           <ImageIcon size={16} /> 
                           {isStory ? 'Card Stories (1080x1920)' : 'Card Feed (1080x1350)'}
                         </h4>
-                        <a href={post.arte_final} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', maxWidth: '200px', cursor: 'pointer', position: 'relative' }} title="Clique para ampliar a arte">
-                          <img 
-                            src={post.arte_final} 
-                            alt="Arte Final" 
-                            style={{ 
-                              width: '100%', 
-                              aspectRatio: isStory ? '9/16' : '4/5',
-                              objectFit: 'cover',
-                              borderRadius: '8px', 
-                              boxShadow: 'var(--shadow-md)',
-                              transition: 'transform 0.2s ease, opacity 0.2s ease'
-                            }} 
-                            onMouseOver={e => e.currentTarget.style.opacity = '0.9'}
-                            onMouseOut={e => e.currentTarget.style.opacity = '1'}
+                        
+                        <label className="btn btn-outline btn-sm" style={{ cursor: 'pointer', margin: 0, padding: '4px 8px', fontSize: '0.75rem' }}>
+                          Upload Manual
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={async (e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                const file = e.target.files[0];
+                                const reader = new FileReader();
+                                reader.onloadend = async () => {
+                                  const base64String = reader.result;
+                                  await fetch(`/api/posts/${post.id}`, {
+                                    method: 'PATCH',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ arte_final: base64String, status_interno: 'Para Revisão Interna' })
+                                  });
+                                  fetchPosts();
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
                           />
-                          <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', pointerEvents: 'none' }}>
-                            🔍 Ampliar
-                          </div>
-                        </a>
-                        <a 
-                          href={post.arte_final} 
-                          download={`Post_${post.data_publicacao.replace(/-/g, '')}.png`}
-                          className="btn btn-outline btn-sm mt-2" 
-                          style={{ width: '100%', maxWidth: '200px', display: 'flex', justifyContent: 'center' }}
-                        >
-                          Baixar Arquivo
-                        </a>
+                        </label>
                       </div>
-                    )}
+
+                      {post.arte_final ? (
+                        <>
+                          <a href={post.arte_final} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', maxWidth: '200px', cursor: 'pointer', position: 'relative' }} title="Clique para ampliar a arte">
+                            <img 
+                              src={post.arte_final} 
+                              alt="Arte Final" 
+                              style={{ 
+                                width: '100%', 
+                                aspectRatio: isStory ? '9/16' : '4/5',
+                                objectFit: 'cover',
+                                borderRadius: '8px', 
+                                boxShadow: 'var(--shadow-md)',
+                                transition: 'transform 0.2s ease, opacity 0.2s ease'
+                              }} 
+                              onMouseOver={e => e.currentTarget.style.opacity = '0.9'}
+                              onMouseOut={e => e.currentTarget.style.opacity = '1'}
+                            />
+                            <div style={{ position: 'absolute', bottom: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', pointerEvents: 'none' }}>
+                              🔍 Ampliar
+                            </div>
+                          </a>
+                          <a 
+                            href={post.arte_final} 
+                            download={`Post_${post.data_publicacao.replace(/-/g, '')}.png`}
+                            className="btn btn-outline btn-sm mt-2" 
+                            style={{ width: '100%', maxWidth: '200px', display: 'flex', justifyContent: 'center' }}
+                          >
+                            Baixar Arquivo
+                          </a>
+                        </>
+                      ) : (
+                        <p className="text-xs text-muted mb-0">Ainda sem arte final. Utilize a IA ou faça upload.</p>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-muted border-2 border-dashed border-slate-200 rounded-md p-6">
