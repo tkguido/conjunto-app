@@ -24,7 +24,8 @@ export default function AgencyView() {
     foto_produto_crua: ''
   });
   const [isCreating, setIsCreating] = useState(false);
-
+  const [editingTextsId, setEditingTextsId] = useState(null);
+  const [tempTexts, setTempTexts] = useState({ texto_instagram: '', acessibilidade_para_todos_verem: '' });
   useEffect(() => {
     fetchPosts();
   }, [params.campanha_id, params.cliente_id]);
@@ -500,12 +501,55 @@ export default function AgencyView() {
 
               <div>
                 {post.texto_instagram ? (
-                  <div className="bg-slate-50 p-4 rounded-md border border-slate-200">
+                  <div className="bg-slate-50 p-4 rounded-md border border-slate-200 relative">
+                    {editingTextsId === post.id ? (
+                      <div className="mb-4 flex justify-end gap-2">
+                        <button className="btn btn-outline btn-sm" onClick={() => setEditingTextsId(null)}>Cancelar</button>
+                        <button className="btn btn-primary btn-sm" onClick={async () => {
+                          await fetch(`/api/posts/${post.id}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(tempTexts)
+                          });
+                          setEditingTextsId(null);
+                          fetchPosts();
+                        }}>Salvar</button>
+                      </div>
+                    ) : (
+                      <div className="mb-4 flex justify-end">
+                        <button className="btn btn-outline btn-sm" onClick={() => {
+                          setEditingTextsId(post.id);
+                          setTempTexts({ 
+                            texto_instagram: post.texto_instagram, 
+                            acessibilidade_para_todos_verem: post.acessibilidade_para_todos_verem 
+                          });
+                        }}>✏️ Editar Textos</button>
+                      </div>
+                    )}
+
                     <h4 className="font-bold text-sm mb-2 flex items-center gap-2"><FileText size={16} /> Head Instagram Feed</h4>
-                    <p className="text-sm whitespace-pre-wrap mb-4">{post.texto_instagram}</p>
+                    {editingTextsId === post.id ? (
+                      <textarea 
+                        className="form-textarea mb-4 text-sm" 
+                        rows="6" 
+                        value={tempTexts.texto_instagram}
+                        onChange={e => setTempTexts({...tempTexts, texto_instagram: e.target.value})}
+                      />
+                    ) : (
+                      <p className="text-sm whitespace-pre-wrap mb-4">{post.texto_instagram}</p>
+                    )}
                     
                     <h4 className="font-bold text-sm mb-2">Acessibilidade</h4>
-                    <p className="text-xs text-muted mb-4">{post.acessibilidade_para_todos_verem}</p>
+                    {editingTextsId === post.id ? (
+                      <textarea 
+                        className="form-textarea mb-4 text-xs" 
+                        rows="3" 
+                        value={tempTexts.acessibilidade_para_todos_verem}
+                        onChange={e => setTempTexts({...tempTexts, acessibilidade_para_todos_verem: e.target.value})}
+                      />
+                    ) : (
+                      <p className="text-xs text-muted mb-4">{post.acessibilidade_para_todos_verem}</p>
+                    )}
 
                     {post.arte_final && (
                       <div className="mt-4 pt-4 border-t border-slate-200">
