@@ -26,7 +26,7 @@ export async function POST(request) {
     // de gerar cenário + desenhar sapato via Canvas
     return NextResponse.json({ 
       success: false, // Forçamos o fallback para o frontend rodar o `/api/generate-image` + Canvas
-      message: 'USE_ADVANCED_CANVAS_PIPELINE'
+      message: 'NANO_BANANA_NOT_CONFIGURED'
     });
 
     // Atualiza o banco de dados com a arte gerada - agora feito pelo Canvas!
