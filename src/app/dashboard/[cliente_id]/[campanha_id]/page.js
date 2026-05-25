@@ -46,19 +46,31 @@ export default function AgencyView() {
 
   const handleAddPost = async (e) => {
     e.preventDefault();
-    if (!newPostData.data_publicacao || !newPostData.formato) return;
+    if (!newPostData.data_publicacao || !newPostData.formato) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
     
     setIsCreating(true);
-    const res = await fetch('/api/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...newPostData, campanha_id: params.campanha_id })
-    });
-    
-    if (res.ok) {
-      setIsModalOpen(false);
-      setNewPostData({ data_publicacao: '', dia_semana: 'Segunda-feira', formato: 'Feed 4:5', horario_agendamento: '12:00', foto_produto_crua: '' });
-      fetchPosts();
+    try {
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newPostData, campanha_id: params.campanha_id })
+      });
+      
+      if (res.ok) {
+        setIsModalOpen(false);
+        setNewPostData({ data_publicacao: '', dia_semana: 'Segunda-feira', formato: 'Feed 4:5', horario_agendamento: '12:00', foto_produto_crua: '' });
+        fetchPosts();
+      } else {
+        const errorData = await res.json();
+        console.error("Failed to create post:", errorData);
+        alert(`Erro ao criar post: ${errorData.error || 'Erro desconhecido'}`);
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+      alert("Erro de conexão ao tentar criar o post.");
     }
     setIsCreating(false);
   };
