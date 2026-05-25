@@ -450,7 +450,22 @@ export default function AgencyView() {
 
                 <div className="form-group mt-4">
                   <label className="form-label">Ref do Produto</label>
-                  <input type="text" className="form-input" defaultValue={post.referencia_produto} />
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    value={post.referencia_produto || ''} 
+                    onChange={(e) => {
+                      const updatedPosts = posts.map(p => p.id === post.id ? { ...p, referencia_produto: e.target.value } : p);
+                      setPosts(updatedPosts);
+                    }}
+                    onBlur={async (e) => {
+                      await fetch(`/api/posts/${post.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ referencia_produto: e.target.value })
+                      });
+                    }}
+                  />
                 </div>
                 
                 <div className="form-group mt-4">
@@ -458,7 +473,11 @@ export default function AgencyView() {
                   <textarea 
                     className="form-textarea" 
                     rows="3" 
-                    defaultValue={post.orientacoes_briefing}
+                    value={post.orientacoes_briefing || ''}
+                    onChange={(e) => {
+                      const updatedPosts = posts.map(p => p.id === post.id ? { ...p, orientacoes_briefing: e.target.value } : p);
+                      setPosts(updatedPosts);
+                    }}
                     onBlur={async (e) => {
                       await fetch(`/api/posts/${post.id}`, {
                         method: 'PATCH',
@@ -474,8 +493,12 @@ export default function AgencyView() {
                   <textarea 
                     className="form-textarea" 
                     rows="3" 
-                    defaultValue={post.direcionamento_designer}
+                    value={post.direcionamento_designer || ''}
                     placeholder="Digite o prompt para o Nano Banana gerar a arte..."
+                    onChange={(e) => {
+                      const updatedPosts = posts.map(p => p.id === post.id ? { ...p, direcionamento_designer: e.target.value } : p);
+                      setPosts(updatedPosts);
+                    }}
                     onBlur={async (e) => {
                       await fetch(`/api/posts/${post.id}`, {
                         method: 'PATCH',
