@@ -586,11 +586,11 @@ export default function AgencyView() {
 
                   <button 
                     className="btn btn-outline" 
-                    onClick={() => handleGenerateArt(post)}
-                    disabled={post.status_interno === 'Aprovado Interno'}
+                    disabled={true}
+                    title="Para usar a IA Avançada, conecte a API no servidor."
                   >
                     <ImageIcon size={16} />
-                    Gerar Arte Final
+                    GERAR CARD
                   </button>
                   
                   {post.status_interno === 'Para Revisão Interna' && (
