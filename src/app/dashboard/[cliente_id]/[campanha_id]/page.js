@@ -50,24 +50,28 @@ export default function AgencyView() {
       });
   };
 
-  const handleAddPost = async (e) => {
-    e.preventDefault();
-    if (!newPostData.data_publicacao || !newPostData.formato) {
-      alert("Preencha todos os campos obrigatórios.");
-      return;
-    }
-    
+  const handleAddPost = async () => {
     setIsCreating(true);
+    
+    const today = new Date().toISOString().split('T')[0];
+    const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    const dia_semana = days[new Date().getDay()];
+
     try {
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newPostData, campanha_id: params.campanha_id })
+        body: JSON.stringify({ 
+          campanha_id: params.campanha_id,
+          data_publicacao: today,
+          dia_semana: dia_semana,
+          formato: 'Feed 4:5',
+          horario_agendamento: '12:00',
+          foto_produto_crua: ''
+        })
       });
       
       if (res.ok) {
-        setIsModalOpen(false);
-        setNewPostData({ data_publicacao: '', dia_semana: 'Segunda-feira', formato: 'Feed 4:5', horario_agendamento: '12:00', foto_produto_crua: '' });
         fetchPosts();
       } else {
         const errorData = await res.json();
@@ -316,8 +320,8 @@ export default function AgencyView() {
             <Link href={`/cliente/${campaign?.id}`} className="btn btn-outline" target="_blank">
               Ver Tela do Cliente ↗
             </Link>
-            <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-              <Plus size={16} /> Novo Post
+            <button className="btn btn-primary" onClick={handleAddPost} disabled={isCreating}>
+              <Plus size={16} /> {isCreating ? 'Criando...' : 'Novo Post'}
             </button>
           </div>
           {posts && campaign && <ExportButton posts={posts} campaignName={campaign.periodo} />}
@@ -339,12 +343,73 @@ export default function AgencyView() {
           const isStory = post.formato.toLowerCase().includes('stories') || post.formato.toLowerCase().includes('story');
           return (
           <div key={post.id} className="card" style={{ border: post.status_cliente === 'Alteração Solicitada' ? '2px solid #fdba74' : '' }}>
-            <div className="flex justify-between items-center mb-4 flex-mobile-col gap-2">
-              <div>
-                <h3 className="font-bold">{post.dia_semana}, {post.data_publicacao}</h3>
-                <span className="text-sm text-muted">{post.formato} • {post.horario_agendamento}</span>
+            <div className="flex justify-between items-start mb-6 pb-4 border-b border-slate-200">
+              <div className="flex flex-col gap-2 w-full max-w-md">
+                <div className="flex gap-2 items-center">
+                  <input 
+                    type="date" 
+                    className="form-input text-sm font-bold p-1" 
+                    value={post.data_publicacao || ''} 
+                    onChange={(e) => {
+                      const date = new Date(e.target.value + 'T12:00:00');
+                      const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+                      const dia_semana = isNaN(date.getTime()) ? post.dia_semana : days[date.getDay()];
+                      const updated = posts.map(p => p.id === post.id ? { ...p, data_publicacao: e.target.value, dia_semana } : p);
+                      setPosts(updated);
+                    }}
+                    onBlur={async (e) => {
+                      const date = new Date(e.target.value + 'T12:00:00');
+                      const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+                      const dia_semana = isNaN(date.getTime()) ? post.dia_semana : days[date.getDay()];
+                      await fetch(`/api/posts/${post.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ data_publicacao: e.target.value, dia_semana })
+                      });
+                    }}
+                  />
+                  <input 
+                    type="time" 
+                    className="form-input text-sm p-1" 
+                    style={{ width: '100px' }}
+                    value={post.horario_agendamento || ''} 
+                    onChange={(e) => {
+                      const updated = posts.map(p => p.id === post.id ? { ...p, horario_agendamento: e.target.value } : p);
+                      setPosts(updated);
+                    }}
+                    onBlur={async (e) => {
+                      await fetch(`/api/posts/${post.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ horario_agendamento: e.target.value })
+                      });
+                    }}
+                  />
+                  <span className="text-sm font-medium text-slate-500 whitespace-nowrap">{post.dia_semana}</span>
+                </div>
+                
+                <div className="flex gap-2">
+                  <select 
+                    className="form-input text-sm text-muted p-1" 
+                    value={post.formato || ''} 
+                    onChange={async (e) => {
+                      const updated = posts.map(p => p.id === post.id ? { ...p, formato: e.target.value } : p);
+                      setPosts(updated);
+                      await fetch(`/api/posts/${post.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ formato: e.target.value })
+                      });
+                    }}
+                  >
+                    <option value="Feed 4:5">Feed 4:5</option>
+                    <option value="Feed 1:1">Feed 1:1</option>
+                    <option value="Stories">Stories 9:16</option>
+                    <option value="Reels">Reels 9:16</option>
+                  </select>
+                </div>
               </div>
-              <span className={`badge ${getBadgeClass(post.status_interno, post.status_cliente)}`}>
+              <span className={`badge whitespace-nowrap ml-4 ${getBadgeClass(post.status_interno, post.status_cliente)}`}>
                 {getStatusText(post)}
               </span>
             </div>
@@ -674,55 +739,7 @@ export default function AgencyView() {
         </div>
       )}
 
-      {isModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem' }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '12px', padding: '2rem', width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Novo Post</h2>
-              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
-            </div>
-            <form onSubmit={handleAddPost}>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="form-group">
-                  <label className="form-label">Data de Publicação</label>
-                  <input type="date" className="form-input" value={newPostData.data_publicacao} onChange={(e) => setNewPostData({...newPostData, data_publicacao: e.target.value})} required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Horário</label>
-                  <input type="time" className="form-input" value={newPostData.horario_agendamento} onChange={(e) => setNewPostData({...newPostData, horario_agendamento: e.target.value})} required />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div className="form-group">
-                  <label className="form-label">Dia da Semana</label>
-                  <select className="form-input" value={newPostData.dia_semana} onChange={(e) => setNewPostData({...newPostData, dia_semana: e.target.value})}>
-                    <option>Segunda-feira</option>
-                    <option>Terça-feira</option>
-                    <option>Quarta-feira</option>
-                    <option>Quinta-feira</option>
-                    <option>Sexta-feira</option>
-                    <option>Sábado</option>
-                    <option>Domingo</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Formato</label>
-                  <select className="form-input" value={newPostData.formato} onChange={(e) => setNewPostData({...newPostData, formato: e.target.value})}>
-                    <option>Feed 4:5</option>
-                    <option>Story 9:16</option>
-                    <option>Carrossel 4:5</option>
-                    <option>Reels 9:16</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex gap-2 mt-6">
-                <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsModalOpen(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }} disabled={isCreating}>{isCreating ? 'Criando...' : 'Criar Post'}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Modal removido - criação de post agora é inline */}
     </div>
   );
 }
