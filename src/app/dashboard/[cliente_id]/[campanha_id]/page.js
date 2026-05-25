@@ -40,7 +40,13 @@ export default function AgencyView() {
         if (foundCampaign) setCampaign(foundCampaign);
         if (foundClient) setClient(foundClient);
         
-        setPosts(data.posts.filter(p => p.campanha_id === params.campanha_id));
+        const filteredPosts = data.posts.filter(p => p.campanha_id === params.campanha_id);
+        filteredPosts.sort((a, b) => {
+          const dateA = new Date(a.data_publicacao + 'T' + (a.horario_agendamento || '00:00'));
+          const dateB = new Date(b.data_publicacao + 'T' + (b.horario_agendamento || '00:00'));
+          return dateA - dateB;
+        });
+        setPosts(filteredPosts);
       });
   };
 
